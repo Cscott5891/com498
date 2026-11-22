@@ -14,4 +14,5 @@ public class ScoreCalculator {
             return difference; // Undershoot penalty
         }
     }
+
 }

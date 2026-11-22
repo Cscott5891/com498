@@ -30,6 +30,10 @@ public class Deck {
         }
     }
 
+    public int cardsRemaining() {
+        return cards.length - nextCard;
+    }
+
     public void shuffle() {
         for (int i = cards.length - 1; i > 0; i--) {
             int j = (int) (Math.random() * (i + 1));
