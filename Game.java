@@ -6,7 +6,8 @@ public class Game {
     private int playerCount = 0;
     private final int[][] headToHeadWins = new int[1000][1000];
     private final ScoreCalculator scoreCalculator = new ScoreCalculator();
-
+    private MatchResult[] matchHistory = new MatchResult[10000];
+    private int matchCount = 0;
     public void menu() {
         int choice;
         do {
@@ -161,6 +162,7 @@ public class Game {
         boolean p2Won = p2.getTotalScore() < p1.getTotalScore();
         p1.recordMatch(p1Won);
         p2.recordMatch(p2Won);
+        saveMatchResults(p1, p2, botA && botB);
         if (p1Won) headToHeadWins[a][b]++;
         if (p2Won) headToHeadWins[b][a]++;
 
@@ -217,6 +219,13 @@ public class Game {
         Player p = players[index];
         System.out.printf("%s | matches=%d | wins=%d | win percentage=%.2f%%%n",
                 p.getName(), p.getMatchesPlayed(), p.getWins(), p.getWinPercentage());
+        System.out.println("\nDetailed Match History:");
+        for (int i = 0; i < matchCount; i++){
+            if (matchHistory[i].getPlayer1().equalsIgnoreCase(name) || matchHistory[i].getPlayer2().equalsIgnoreCase(name)) {
+                matchHistory[i].displayResult();
+                System.out.println("--------------------------");
+            }
+        }
     }
 
     private void comparePlayers() {
@@ -266,5 +275,19 @@ public class Game {
         }
         System.out.println("Simulation complete.");
         leaderboard();
+    }
+    private void saveMatchResults(Player p1, Player p2, boolean simulated) {
+        if (matchCount < matchHistory.length){
+            matchHistory[matchCount] = new MatchResult(
+                    p1.getName(),
+                    p2.getName(),
+                    p1.getTotalScore(),
+                    p2.getTotalScore(),
+                    simulated
+            );
+            matchCount++;
+        } else {
+            System.out.println("Match history is full.");
+        }
     }
 }
