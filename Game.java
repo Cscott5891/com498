@@ -120,19 +120,23 @@ public class Game {
             boolean firstBot = first == 0 ? botA : botB;
             boolean secondBot = first == 0 ? botB : botA;
 
-            int firstGuess = firstBot
-                    ? randomInt(RuleConfig.SIM_MIN_CARDS, Math.min(26, deck.cardsRemaining()))
-                    : readInt(players[firstIndex].getName() + " cards to draw (1-" + Math.min(26, deck.cardsRemaining()) + "): ",
-                              1, Math.min(26, deck.cardsRemaining()));
-            deal(players[firstIndex], deck, firstGuess, target, show);
-
+            int firstGuess;
+            if (firstBot) {
+                firstGuess = randomInt(RuleConfig.SIM_MIN_CARDS, RuleConfig.SIM_MAX_CARDS);
+            } else {
+                firstGuess = readInt(players[firstIndex].getName() + " cards to draw (1-26):", 1, 26);
+            }
+            deal(players [firstIndex], deck, firstGuess, target, show);
             int remaining = deck.cardsRemaining();
             int secondGuess;
             if (secondBot) {
-                secondGuess = randomInt(RuleConfig.SIM_MIN_CARDS, Math.max(RuleConfig.SIM_MIN_CARDS, remaining));
+                secondGuess = firstGuess + RuleConfig.SIM_OFFSET;
             } else {
                 secondGuess = readInt(players[secondIndex].getName() + " cards to draw (1-" + remaining + "): ",
                                       1, remaining);
+            }
+            if (secondGuess > remaining) {
+                secondGuess = remaining;
             }
             deal(players[secondIndex], deck, secondGuess, target, show);
 
@@ -211,7 +215,7 @@ public class Game {
             return;
         }
         Player p = players[index];
-        System.out.printf("%s | matches=%d | wins=%d | win percentage=%.2f%%n",
+        System.out.printf("%s | matches=%d | wins=%d | win percentage=%.2f%%%n",
                 p.getName(), p.getMatchesPlayed(), p.getWins(), p.getWinPercentage());
     }
 
@@ -230,6 +234,10 @@ public class Game {
                 p2.getName(), p2.getMatchesPlayed(), p2.getWins(), p2.getWinPercentage());
         System.out.println("Head-to-head: " + p1.getName() + " won " + headToHeadWins[a][b]
                 + " times, " + p2.getName() + " won " + headToHeadWins[b][a] + " times.");
+        if (a == b) {
+            System.out.println("Please select teo different players.");
+            return;
+        }
     }
 
     private void filterWins() {
